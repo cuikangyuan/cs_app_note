@@ -66,6 +66,13 @@ section [1].text
 start from 0x00000040 takes 0x0e bytes
 00000040: 55 48 89 E5 90 5D C3 55 48 89 E5 90 5D C3 00 00    UH.e.]CUH.e.]C..
 
+
+
+8bits
+symbol 
+0001 0001
+Bind Type
+
  [Nr] Name              Type             Address           Offset
        Size              EntSize          Flags  Link  Info  Align
   [ 0]                   NULL             0000000000000000  00000000
@@ -90,3 +97,5 @@ start from 0x00000040 takes 0x0e bytes
        000000000000001f  0000000000000000           0     0     1
   [10] .shstrtab         STRTAB           0000000000000000  00000250
        0000000000000054  0000000000000000           0     0     1
+
+
