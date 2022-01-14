@@ -1,0 +1,116 @@
+read -r main.o
+
+Relocation section '.rela.text' at offset 0x2a0 contains 6 entries:
+  Offset          Info           Type           Sym. Value    Sym. Name + Addend
+00000000000a  000a00000002 R_X86_64_PC32     0000000000000004 b - 4
+000000000010  000900000002 R_X86_64_PC32     0000000000000000 a - 4
+000000000019  000d00000004 R_X86_64_PLT32    0000000000000000 sum - 4
+00000000001f  000a00000002 R_X86_64_PC32     0000000000000004 b - 4
+000000000025  000900000002 R_X86_64_PC32     0000000000000000 a - 4
+00000000002e  000e00000004 R_X86_64_PLT32    0000000000000000 mul - 4
+
+==============================================================================
+
+objdump -d main.o
+
+main.o:     file format elf64-x86-64
+Disassembly of section .text:
+
+0000000000000000 <main>:
+   0:   f3 0f 1e fa             endbr64
+   4:   55                      push   %rbp
+   5:   48 89 e5                mov    %rsp,%rbp
+   8:   8b 15 00 00 00 00       mov    0x0(%rip),%edx        # e <main+0xe>
+   e:   8b 05 00 00 00 00       mov    0x0(%rip),%eax        # 14 <main+0x14>
+  14:   89 d6                   mov    %edx,%esi
+  16:   89 c7                   mov    %eax,%edi
+  18:   e8 00 00 00 00          callq  1d <main+0x1d>
+  1d:   8b 15 00 00 00 00       mov    0x0(%rip),%edx        # 23 <main+0x23>
+  23:   8b 05 00 00 00 00       mov    0x0(%rip),%eax        # 29 <main+0x29>
+  29:   89 d6                   mov    %edx,%esi
+  2b:   89 c7                   mov    %eax,%edi
+  2d:   e8 00 00 00 00          callq  32 <main+0x32>
+  32:   b8 00 00 00 00          mov    $0x0,%eax
+  37:   5d                      pop    %rbp
+  38:   c3                      retq
+  ==============================================================================
+
+
+ld --entry=main a.o b.o main.o -o relocated.o
+
+
+readelf -s relocated.o
+Symbol table '.symtab' contains 17 entries:
+   Num:    Value          Size Type    Bind   Vis      Ndx Name
+     0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND
+     1: 00000000004001c8     0 SECTION LOCAL  DEFAULT    1
+     2: 0000000000401000     0 SECTION LOCAL  DEFAULT    2
+     3: 0000000000402000     0 SECTION LOCAL  DEFAULT    3
+     4: 0000000000404000     0 SECTION LOCAL  DEFAULT    4
+     5: 0000000000000000     0 SECTION LOCAL  DEFAULT    5
+     6: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS a.c
+     7: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS b.c
+     8: 0000000000000000     0 FILE    LOCAL  DEFAULT  ABS main.c
+     9: 0000000000404004     4 OBJECT  GLOBAL DEFAULT    4 b
+    10: 0000000000401000    24 FUNC    GLOBAL DEFAULT    2 sum
+    11: 0000000000401018    23 FUNC    GLOBAL DEFAULT    2 mul
+    12: 0000000000404008     0 NOTYPE  GLOBAL DEFAULT    4 __bss_start
+    13: 000000000040102f    57 FUNC    GLOBAL DEFAULT    2 main
+    14: 0000000000404008     0 NOTYPE  GLOBAL DEFAULT    4 _edata
+    15: 0000000000404008     0 NOTYPE  GLOBAL DEFAULT    4 _end
+    16: 0000000000404000     4 OBJECT  GLOBAL DEFAULT    4 a
+==============================================================================
+
+objdump -d relocated.o
+
+relocated.o:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000401000 <sum>:
+  401000:       f3 0f 1e fa             endbr64
+  401004:       55                      push   %rbp
+  401005:       48 89 e5                mov    %rsp,%rbp
+  401008:       89 7d fc                mov    %edi,-0x4(%rbp)
+  40100b:       89 75 f8                mov    %esi,-0x8(%rbp)
+  40100e:       8b 55 fc                mov    -0x4(%rbp),%edx
+  401011:       8b 45 f8                mov    -0x8(%rbp),%eax
+  401014:       01 d0                   add    %edx,%eax
+  401016:       5d                      pop    %rbp
+  401017:       c3                      retq
+
+0000000000401018 <mul>:
+  401018:       f3 0f 1e fa             endbr64
+  40101c:       55                      push   %rbp
+  40101d:       48 89 e5                mov    %rsp,%rbp
+  401020:       89 7d fc                mov    %edi,-0x4(%rbp)
+  401023:       89 75 f8                mov    %esi,-0x8(%rbp)
+  401026:       8b 45 fc                mov    -0x4(%rbp),%eax
+  401029:       0f af 45 f8             imul   -0x8(%rbp),%eax
+  40102d:       5d                      pop    %rbp
+  40102e:       c3                      retq
+
+000000000040102f <main>:
+  40102f:       f3 0f 1e fa             endbr64
+  401033:       55                      push   %rbp
+  401034:       48 89 e5                mov    %rsp,%rbp
+  401037:       8b 15 c7 2f 00 00       mov    0x2fc7(%rip),%edx        # 404004 <b>
+  40103d:       8b 05 bd 2f 00 00       mov    0x2fbd(%rip),%eax        # 404000 <a>
+  401043:       89 d6                   mov    %edx,%esi
+  401045:       89 c7                   mov    %eax,%edi
+  401047:       e8 b4 ff ff ff          callq  401000 <sum>
+  40104c:       8b 15 b2 2f 00 00       mov    0x2fb2(%rip),%edx        # 404004 <b>
+  401052:       8b 05 a8 2f 00 00       mov    0x2fa8(%rip),%eax        # 404000 <a>
+  401058:       89 d6                   mov    %edx,%esi
+  40105a:       89 c7                   mov    %eax,%edi
+  40105c:       e8 b7 ff ff ff          callq  401018 <mul>
+  401061:       b8 00 00 00 00          mov    $0x0,%eax
+  401066:       5d                      pop    %rbp
+  401067:       c3                      retq
+    ==============================================================================
+
+S(sum) = 0x401000
+A(sum) = -4;
+P(sum) = 0x401048
+Result = S + A - P = 0xffffb4
