@@ -1,5 +1,6 @@
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
 
 int main() 
 {
@@ -13,8 +14,8 @@ int main()
     //     printf("\n");
     // }
 
-    int *p1[4] = {1, 2, 3, 4};
-	printf("%d\n", *p1);
+    // int *p1[4] = {1, 2, 3, 4};
+	// printf("%d\n", *p1);
 
     // for (int i = 0; i < 4; i++)
     // {
@@ -35,6 +36,33 @@ int main()
     //     printf("%d\n", *(*p2 + i));
     //     printf("%d\n", **(p2 + i));//错误！！！增加指针类型大小的字节
     // }
+
+    int N = 20;
+    int n = 8;
+    int g[N][N];
+    bool dg[N];
+    for (int64_t i = 0; i < n; i++)
+    {
+        for (int64_t j = 0; j < n; j++)
+        {
+            printf("%ld\t", j + i);
+        }
+        printf("\n");
+    }
+
+    printf("------------------------\n");
+
+    for (int64_t i = 0; i < n; i++)
+    {
+        for (int64_t j = 0; j < n; j++)
+        {
+            printf("%ld\t", n - j + i);
+        }
+        printf("\n");
+    }
+    
+
+    
 
     return 0;
 }
