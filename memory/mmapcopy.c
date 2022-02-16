@@ -10,8 +10,9 @@ void mmapcopy(int fd, int size)
     char *bufp; /* ptr to memory-mapped VM area */
 
     bufp = mmap(NULL, size, PROT_READ, MAP_PRIVATE, fd, 0);
-    write(1, bufp, size);
-    printf("\n");
+    int res = write(1, bufp, size);
+    //int res = write(fd, bufp, 1);
+    printf("\nwrite res = %d\n", res);
     return;
 }
 
